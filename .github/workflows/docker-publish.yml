@@ -19,7 +19,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and Publish Docker Image
-        run: | 
-          docker build . -t ghcr.io/vteraz/skills-publish-docker-images-2/stackoverflown:main
-          docker push ghcr.io/vteraz/skills-publish-docker-images-2/stackoverflown:main
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/vteraz/skills-publish-docker-images-2/stackoverflown:main
+            ghcr.io/vteraz/skills-publish-docker-images-2/stackoverflown:${{ github.sha }}
